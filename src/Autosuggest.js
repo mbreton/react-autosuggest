@@ -19,6 +19,14 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
     scrollBar: PropTypes.bool               // Should be set to true when the suggestions container can have a scroll bar
   }
 
+  componentWillReceiveProps(props) {
+    this.setState({
+        value: props.inputAttributes.value || ''
+    });
+    this.onChange = props.inputAttributes.onChange || (() => {});
+    this.onBlur = props.inputAttributes.onBlur || (() => {});
+  }
+
   static defaultProps = {
     showWhen: input => input.trim().length > 0,
     onSuggestionSelected: () => {},
