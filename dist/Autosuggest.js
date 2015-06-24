@@ -8,7 +8,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -68,6 +68,15 @@ var Autosuggest = (function (_Component) {
   _inherits(Autosuggest, _Component);
 
   _createClass(Autosuggest, [{
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(props) {
+      this.setState({
+        value: props.inputAttributes.value || ''
+      });
+      this.onChange = props.inputAttributes.onChange || function () {};
+      this.onBlur = props.inputAttributes.onBlur || function () {};
+    }
+  }, {
     key: 'resetSectionIterator',
     value: function resetSectionIterator(suggestions) {
       if (this.isMultipleSections(suggestions)) {
@@ -284,16 +293,37 @@ var Autosuggest = (function (_Component) {
       this.props.onSuggestionSelected(focusedSuggestion, event);
     }
   }, {
+    key: 'computeWidth',
+    value: function computeWidth(input) {
+      var sizer = document.createElement('span');
+      sizer.id = 'sizer';
+      var fullStyle = window.getComputedStyle(input, null);
+      sizer.style.font = fullStyle.font;
+      sizer.style.display = 'inline-block';
+      sizer.style.opacity = '0';
+      sizer.style.position = 'absolute';
+      sizer.innerHTML = input.value;
+      document.body.appendChild(sizer);
+      var width = sizer.clientWidth + 'px';
+      document.body.removeChild(sizer);
+      return width;
+    }
+  }, {
     key: 'onInputChange',
     value: function onInputChange(event) {
       var newValue = event.target.value;
+      var width = this.props.inputAttributes.width || 'auto';
+      if (this.props.fitContent) {
+        width = this.computeWidth(event.target);
+      }
 
       this.onSuggestionUnfocused();
       this.onChange(newValue);
 
       this.setState({
         value: newValue,
-        valueBeforeUpDown: null
+        valueBeforeUpDown: null,
+        width: width
       });
 
       this.showSuggestions(newValue);
@@ -537,7 +567,7 @@ var Autosuggest = (function (_Component) {
 
       return _react2['default'].createElement(
         'div',
-        { className: 'react-autosuggest' },
+        { className: 'react-autosuggest', width: this.state.width },
         _react2['default'].createElement('input', _extends({}, this.props.inputAttributes, {
           type: 'text',
           value: this.state.value,
@@ -550,7 +580,8 @@ var Autosuggest = (function (_Component) {
           ref: 'input',
           onChange: this.onInputChange,
           onKeyDown: this.onInputKeyDown,
-          onBlur: this.onInputBlur })),
+          onBlur: this.onInputBlur
+        })),
         this.renderSuggestions()
       );
     }
@@ -567,7 +598,8 @@ var Autosuggest = (function (_Component) {
       onSuggestionUnfocused: _react.PropTypes.func, // This function is called when suggestion is unfocused via mouse hover or Up/Down keys
       inputAttributes: _react.PropTypes.object, // Attributes to pass to the input field (e.g. { id: 'my-input', className: 'sweet autosuggest' })
       id: _react.PropTypes.string, // Used in aria-* attributes. If multiple Autosuggest's are rendered on a page, they must have unique ids.
-      scrollBar: _react.PropTypes.bool // Should be set to true when the suggestions container can have a scroll bar
+      scrollBar: _react.PropTypes.bool, // Should be set to true when the suggestions container can have a scroll bar
+      fitContent: _react.PropTypes.bool // Set to true if you want the with fit the content's  Autosuggest component
     },
     enumerable: true
   }, {
