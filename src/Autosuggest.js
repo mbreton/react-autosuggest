@@ -550,7 +550,7 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
               onChange={this.onInputChange}
               onKeyDown={this.onInputKeyDown}
               onBlur={this.onInputBlur}
-              width={this.state.width}
+              style={{width: this.state.width}}
               />
           {this.renderSuggestions()}
         </div>
