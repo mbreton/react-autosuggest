@@ -250,6 +250,11 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
       this.scrollToSuggestion(direction, sectionIndex, suggestionIndex);
     }
 
+    newState.width = this.props.inputAttributes.width || "auto";
+    if (this.props.fitContent){
+      newState.width = this.computeWidth(event.target);
+    }
+
     this.onChange(newState.value);
     this.setState(newState);
   }
@@ -319,6 +324,11 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
           newState.value = this.state.valueBeforeUpDown;
         } else if (this.state.suggestions === null) {
           newState.value = '';
+        }
+
+        newState.width = this.props.inputAttributes.width || "auto";
+        if (this.props.fitContent){
+          newState.width = this.computeWidth(event.target);
         }
 
         this.onSuggestionUnfocused();
@@ -401,6 +411,11 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
 
     this.justClickedOnSuggestion = true;
 
+    let width = this.props.inputAttributes.width || "auto";
+    if (this.props.fitContent){
+      width = this.computeWidth(event.target);
+    }
+
     this.onSuggestionSelected(event);
     this.onChange(suggestionValue);
     this.setState({
@@ -408,7 +423,8 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
       suggestions: null,
       focusedSectionIndex: null,
       focusedSuggestionIndex: null,
-      valueBeforeUpDown: null
+      valueBeforeUpDown: null,
+      width: width
     }, () => {
       // This code executes after the component is re-rendered
       setTimeout(() => {
@@ -520,7 +536,7 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
         this.getSuggestionId(this.state.focusedSectionIndex, this.state.focusedSuggestionIndex);
 
     return (
-        <div className="react-autosuggest" width={this.state.width}>
+        <div className="react-autosuggest">
           <input {...this.props.inputAttributes}
               type="text"
               value={this.state.value}
@@ -534,6 +550,7 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
               onChange={this.onInputChange}
               onKeyDown={this.onInputKeyDown}
               onBlur={this.onInputBlur}
+              width={this.state.width}
               />
           {this.renderSuggestions()}
         </div>
