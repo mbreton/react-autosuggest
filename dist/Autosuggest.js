@@ -597,7 +597,7 @@ var Autosuggest = (function (_Component) {
           onChange: this.onInputChange,
           onKeyDown: this.onInputKeyDown,
           onBlur: this.onInputBlur,
-          width: this.state.width
+          style: { width: this.state.width }
         })),
         this.renderSuggestions()
       );
