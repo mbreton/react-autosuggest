@@ -281,6 +281,11 @@ var Autosuggest = (function (_Component) {
         this.scrollToSuggestion(direction, sectionIndex, suggestionIndex);
       }
 
+      newState.width = this.props.inputAttributes.width || 'auto';
+      if (this.props.fitContent) {
+        newState.width = this.computeWidth(event.target);
+      }
+
       this.onChange(newState.value);
       this.setState(newState);
     }
@@ -356,6 +361,11 @@ var Autosuggest = (function (_Component) {
             newState.value = this.state.valueBeforeUpDown;
           } else if (this.state.suggestions === null) {
             newState.value = '';
+          }
+
+          newState.width = this.props.inputAttributes.width || 'auto';
+          if (this.props.fitContent) {
+            newState.width = this.computeWidth(event.target);
           }
 
           this.onSuggestionUnfocused();
@@ -438,6 +448,11 @@ var Autosuggest = (function (_Component) {
 
       this.justClickedOnSuggestion = true;
 
+      var width = this.props.inputAttributes.width || 'auto';
+      if (this.props.fitContent) {
+        width = this.computeWidth(event.target);
+      }
+
       this.onSuggestionSelected(event);
       this.onChange(suggestionValue);
       this.setState({
@@ -445,7 +460,8 @@ var Autosuggest = (function (_Component) {
         suggestions: null,
         focusedSectionIndex: null,
         focusedSuggestionIndex: null,
-        valueBeforeUpDown: null
+        valueBeforeUpDown: null,
+        width: width
       }, function () {
         // This code executes after the component is re-rendered
         setTimeout(function () {
@@ -567,7 +583,7 @@ var Autosuggest = (function (_Component) {
 
       return _react2['default'].createElement(
         'div',
-        { className: 'react-autosuggest', width: this.state.width },
+        { className: 'react-autosuggest' },
         _react2['default'].createElement('input', _extends({}, this.props.inputAttributes, {
           type: 'text',
           value: this.state.value,
@@ -580,7 +596,8 @@ var Autosuggest = (function (_Component) {
           ref: 'input',
           onChange: this.onInputChange,
           onKeyDown: this.onInputKeyDown,
-          onBlur: this.onInputBlur
+          onBlur: this.onInputBlur,
+          width: this.state.width
         })),
         this.renderSuggestions()
       );
