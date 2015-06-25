@@ -271,10 +271,10 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
     sizer.style.position = "absolute";
     sizer.innerHTML = newValue;
     document.body.appendChild(sizer);
-    var width = sizer.clientWidth + "px";
+    var width = sizer.offsetWidth + "px";
     document.body.removeChild(sizer);
     return width;
-  };
+  }
 
   applyNewWidth (newValue){
     const input = React.findDOMNode(this.refs.input);

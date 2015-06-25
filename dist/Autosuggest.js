@@ -304,7 +304,7 @@ var Autosuggest = (function (_Component) {
       sizer.style.position = 'absolute';
       sizer.innerHTML = newValue;
       document.body.appendChild(sizer);
-      var width = sizer.clientWidth + 'px';
+      var width = sizer.offsetWidth + 'px';
       document.body.removeChild(sizer);
       return width;
     }
