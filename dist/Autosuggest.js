@@ -280,12 +280,7 @@ var Autosuggest = (function (_Component) {
       if (this.props.scrollBar) {
         this.scrollToSuggestion(direction, sectionIndex, suggestionIndex);
       }
-
-      newState.width = this.props.inputAttributes.width || 'auto';
-      if (this.props.fitContent) {
-        newState.width = this.computeWidth(event.target);
-      }
-
+      this.applyNewWidth(newState.value);
       this.onChange(newState.value);
       this.setState(newState);
     }
@@ -299,7 +294,7 @@ var Autosuggest = (function (_Component) {
     }
   }, {
     key: 'computeWidth',
-    value: function computeWidth(input) {
+    value: function computeWidth(input, newValue) {
       var sizer = document.createElement('span');
       sizer.id = 'sizer';
       var fullStyle = window.getComputedStyle(input, null);
@@ -307,28 +302,31 @@ var Autosuggest = (function (_Component) {
       sizer.style.display = 'inline-block';
       sizer.style.opacity = '0';
       sizer.style.position = 'absolute';
-      sizer.innerHTML = input.value;
+      sizer.innerHTML = newValue;
       document.body.appendChild(sizer);
       var width = sizer.clientWidth + 'px';
       document.body.removeChild(sizer);
       return width;
     }
   }, {
+    key: 'applyNewWidth',
+    value: function applyNewWidth(newValue) {
+      var input = _react2['default'].findDOMNode(this.refs.input);
+      var width = this.props.fitContent ? this.computeWidth(input, newValue) : this.props.inputAttributes.width || 'auto';
+      this.setState({ width: width });
+    }
+  }, {
     key: 'onInputChange',
     value: function onInputChange(event) {
       var newValue = event.target.value;
-      var width = this.props.inputAttributes.width || 'auto';
-      if (this.props.fitContent) {
-        width = this.computeWidth(event.target);
-      }
 
       this.onSuggestionUnfocused();
+      this.applyNewWidth(newValue);
       this.onChange(newValue);
 
       this.setState({
         value: newValue,
-        valueBeforeUpDown: null,
-        width: width
+        valueBeforeUpDown: null
       });
 
       this.showSuggestions(newValue);
@@ -363,14 +361,10 @@ var Autosuggest = (function (_Component) {
             newState.value = '';
           }
 
-          newState.width = this.props.inputAttributes.width || 'auto';
-          if (this.props.fitContent) {
-            newState.width = this.computeWidth(event.target);
-          }
-
           this.onSuggestionUnfocused();
 
           if (typeof newState.value === 'string' && newState.value !== this.state.value) {
+            this.applyNewWidth(newState.value);
             this.onChange(newState.value);
           }
 
@@ -448,20 +442,15 @@ var Autosuggest = (function (_Component) {
 
       this.justClickedOnSuggestion = true;
 
-      var width = this.props.inputAttributes.width || 'auto';
-      if (this.props.fitContent) {
-        width = this.computeWidth(event.target);
-      }
-
       this.onSuggestionSelected(event);
+      this.applyNewWidth(suggestionValue);
       this.onChange(suggestionValue);
       this.setState({
         value: suggestionValue,
         suggestions: null,
         focusedSectionIndex: null,
         focusedSuggestionIndex: null,
-        valueBeforeUpDown: null,
-        width: width
+        valueBeforeUpDown: null
       }, function () {
         // This code executes after the component is re-rendered
         setTimeout(function () {

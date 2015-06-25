@@ -249,12 +249,7 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
     if (this.props.scrollBar) {
       this.scrollToSuggestion(direction, sectionIndex, suggestionIndex);
     }
-
-    newState.width = this.props.inputAttributes.width || "auto";
-    if (this.props.fitContent){
-      newState.width = this.computeWidth(event.target);
-    }
-
+    this.applyNewWidth(newState.value);
     this.onChange(newState.value);
     this.setState(newState);
   }
@@ -266,7 +261,7 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
     this.props.onSuggestionSelected(focusedSuggestion, event);
   }
 
-  computeWidth (input){
+  computeWidth (input, newValue){
     var sizer = document.createElement('span');
     sizer.id = "sizer";
     var fullStyle = window.getComputedStyle(input, null);
@@ -274,27 +269,31 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
     sizer.style.display = "inline-block";
     sizer.style.opacity = "0";
     sizer.style.position = "absolute";
-    sizer.innerHTML = input.value;
+    sizer.innerHTML = newValue;
     document.body.appendChild(sizer);
     var width = sizer.clientWidth + "px";
     document.body.removeChild(sizer);
     return width;
   };
 
+  applyNewWidth (newValue){
+    const input = React.findDOMNode(this.refs.input);
+    const width = this.props.fitContent ?
+                      this.computeWidth(input, newValue)
+                    : this.props.inputAttributes.width || "auto";
+    this.setState({width: width});
+  }
+
   onInputChange(event) {
     const newValue = event.target.value;
-    let width = this.props.inputAttributes.width || "auto";
-    if (this.props.fitContent){
-      width = this.computeWidth(event.target);
-    }
 
     this.onSuggestionUnfocused();
+    this.applyNewWidth(newValue);
     this.onChange(newValue);
 
     this.setState({
       value: newValue,
-      valueBeforeUpDown: null,
-      width: width
+      valueBeforeUpDown: null
     });
 
     this.showSuggestions(newValue);
@@ -326,14 +325,10 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
           newState.value = '';
         }
 
-        newState.width = this.props.inputAttributes.width || "auto";
-        if (this.props.fitContent){
-          newState.width = this.computeWidth(event.target);
-        }
-
         this.onSuggestionUnfocused();
 
         if (typeof newState.value === 'string' && newState.value !== this.state.value) {
+          this.applyNewWidth(newState.value);
           this.onChange(newState.value);
         }
 
@@ -411,20 +406,15 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
 
     this.justClickedOnSuggestion = true;
 
-    let width = this.props.inputAttributes.width || "auto";
-    if (this.props.fitContent){
-      width = this.computeWidth(event.target);
-    }
-
     this.onSuggestionSelected(event);
+    this.applyNewWidth(suggestionValue);
     this.onChange(suggestionValue);
     this.setState({
       value: suggestionValue,
       suggestions: null,
       focusedSectionIndex: null,
       focusedSuggestionIndex: null,
-      valueBeforeUpDown: null,
-      width: width
+      valueBeforeUpDown: null
     }, () => {
       // This code executes after the component is re-rendered
       setTimeout(() => {
