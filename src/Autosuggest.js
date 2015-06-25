@@ -266,6 +266,7 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
     sizer.id = "sizer";
     var fullStyle = window.getComputedStyle(input, null);
     sizer.style.font = fullStyle.font;
+    sizer.style.padding = fullStyle.padding;
     sizer.style.display = "inline-block";
     sizer.style.opacity = "0";
     sizer.style.position = "absolute";
