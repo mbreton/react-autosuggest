@@ -286,15 +286,7 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
         if (this.state.valueBeforeUpDown !== null && this.suggestionIsFocused()) {
           this.onSuggestionSelected(event);
         }
-        if (!this.props.allowNoSuggestionValue && !this.isValueComeFromSuggestion){
-            this.setState({
-                value: "",
-                focusedSectionIndex: null,
-                focusedSuggestionIndex: null,
-                suggestions: null,
-                valueBeforeUpDown: null
-            });
-        }
+        this.checkIsAllowToChooseNonSuggestion();
 
         this.setSuggestionsState(null);
         break;
@@ -351,19 +343,23 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
     }
   }
 
+  checkIsAllowToChooseNonSuggestion() {
+      if (!this.props.allowNoSuggestionValue && !this.isValueComeFromSuggestion) {
+          this.setState({
+              value: "",
+              focusedSectionIndex: null,
+              focusedSuggestionIndex: null,
+              suggestions: null,
+              valueBeforeUpDown: null
+          });
+      }
+  }
+
   onInputBlur() {
     this.onSuggestionUnfocused();
 
     if (!this.justClickedOnSuggestion) {
-      if (!this.props.allowNoSuggestionValue && !this.isValueComeFromSuggestion){
-        this.setState({
-            value: "",
-            focusedSectionIndex: null,
-            focusedSuggestionIndex: null,
-            suggestions: null,
-            valueBeforeUpDown: null
-        });
-      }
+      this.checkIsAllowToChooseNonSuggestion();
       this.onBlur();
     }
 
