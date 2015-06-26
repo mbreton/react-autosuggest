@@ -54,6 +54,7 @@ var Autosuggest = (function (_Component) {
     this.suggestionsFn = (0, _debounce2['default'])(props.suggestions, 100);
     this.onChange = props.inputAttributes.onChange || function () {};
     this.onBlur = props.inputAttributes.onBlur || function () {};
+    this.isValueComeFromSuggestion = false;
     this.lastSuggestionsInputValue = null; // Helps to deal with delayed requests
     this.justUnfocused = false; // Helps to avoid calling onSuggestionUnfocused
     // twice when mouse is moving between suggestions
@@ -288,7 +289,7 @@ var Autosuggest = (function (_Component) {
     key: 'onSuggestionSelected',
     value: function onSuggestionSelected(event) {
       var focusedSuggestion = this.getFocusedSuggestion();
-
+      this.isValueComeFromSuggestion = true;
       this.props.onSuggestionUnfocused(focusedSuggestion);
       this.props.onSuggestionSelected(focusedSuggestion, event);
     }
@@ -321,6 +322,7 @@ var Autosuggest = (function (_Component) {
     value: function onInputChange(event) {
       var newValue = event.target.value;
 
+      this.isValueComeFromSuggestion = false;
       this.onSuggestionUnfocused();
       this.applyNewWidth(newValue);
       this.onChange(newValue);
@@ -343,6 +345,7 @@ var Autosuggest = (function (_Component) {
           if (this.state.valueBeforeUpDown !== null && this.suggestionIsFocused()) {
             this.onSuggestionSelected(event);
           }
+          this.checkIsAllowToChooseNonSuggestion();
 
           this.setSuggestionsState(null);
           break;
@@ -395,11 +398,28 @@ var Autosuggest = (function (_Component) {
       }
     }
   }, {
+    key: 'checkIsAllowToChooseNonSuggestion',
+    value: function checkIsAllowToChooseNonSuggestion() {
+      if (!this.props.allowNoSuggestionValue && !this.isValueComeFromSuggestion) {
+        this.setState({
+          value: '',
+          focusedSectionIndex: null,
+          focusedSuggestionIndex: null,
+          suggestions: null,
+          valueBeforeUpDown: null
+        });
+      }
+    }
+  }, {
     key: 'onInputBlur',
     value: function onInputBlur() {
       this.onSuggestionUnfocused();
 
       if (!this.justClickedOnSuggestion) {
+        this.checkIsAllowToChooseNonSuggestion();
+        if (this.props.selectFirstOnBlur && this.state.suggestions && this.state.suggestions.length > 0) {
+          this.focusOnSuggestionUsingKeyboard('down', [0, 0]);
+        }
         this.onBlur();
       }
 
@@ -606,7 +626,9 @@ var Autosuggest = (function (_Component) {
       inputAttributes: _react.PropTypes.object, // Attributes to pass to the input field (e.g. { id: 'my-input', className: 'sweet autosuggest' })
       id: _react.PropTypes.string, // Used in aria-* attributes. If multiple Autosuggest's are rendered on a page, they must have unique ids.
       scrollBar: _react.PropTypes.bool, // Should be set to true when the suggestions container can have a scroll bar
-      fitContent: _react.PropTypes.bool // Set to true if you want the with fit the content's  Autosuggest component
+      allowNoSuggestionValue: _react.PropTypes.bool,
+      fitContent: _react.PropTypes.bool, // Set to true if you want the with fit the content's  Autosuggest component
+      selectFirstOnBlur: _react.PropTypes.bool
     },
     enumerable: true
   }, {
@@ -620,7 +642,9 @@ var Autosuggest = (function (_Component) {
       onSuggestionUnfocused: function onSuggestionUnfocused() {},
       inputAttributes: {},
       id: '1',
-      scrollBar: false
+      scrollBar: false,
+      allowNoSuggestionValue: true,
+      selectFirstOnBlur: false
     },
     enumerable: true
   }]);
