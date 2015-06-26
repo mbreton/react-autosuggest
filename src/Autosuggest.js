@@ -18,7 +18,8 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
     id: PropTypes.string,                   // Used in aria-* attributes. If multiple Autosuggest's are rendered on a page, they must have unique ids.
     scrollBar: PropTypes.bool,               // Should be set to true when the suggestions container can have a scroll bar
     allowNoSuggestionValue: PropTypes.bool,
-    fitContent: PropTypes.bool              // Set to true if you want the with fit the content's  Autosuggest component
+    fitContent: PropTypes.bool,              // Set to true if you want the with fit the content's  Autosuggest component
+    selectFirstOnBlur: PropTypes.bool
   }
 
   componentWillReceiveProps(props) {
@@ -37,7 +38,8 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
     inputAttributes: {},
     id: '1',
     scrollBar: false,
-    allowNoSuggestionValue: true
+    allowNoSuggestionValue: true,
+    selectFirstOnBlur: false
   }
 
   constructor(props) {
@@ -387,6 +389,9 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
 
     if (!this.justClickedOnSuggestion) {
       this.checkIsAllowToChooseNonSuggestion();
+      if (this.props.selectFirstOnBlur && this.state.suggestions && this.state.suggestions.length > 0){
+        this.focusOnSuggestionUsingKeyboard('down', [0, 0]);
+      }
       this.onBlur();
     }
 
