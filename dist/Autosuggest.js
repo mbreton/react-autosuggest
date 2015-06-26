@@ -280,7 +280,7 @@ var Autosuggest = (function (_Component) {
       if (this.props.scrollBar) {
         this.scrollToSuggestion(direction, sectionIndex, suggestionIndex);
       }
-
+      this.applyNewWidth(newState.value);
       this.onChange(newState.value);
       this.setState(newState);
     }
@@ -293,11 +293,36 @@ var Autosuggest = (function (_Component) {
       this.props.onSuggestionSelected(focusedSuggestion, event);
     }
   }, {
+    key: 'computeWidth',
+    value: function computeWidth(input, newValue) {
+      var sizer = document.createElement('span');
+      sizer.id = 'sizer';
+      var fullStyle = window.getComputedStyle(input, null);
+      sizer.style.font = fullStyle.font;
+      sizer.style.padding = fullStyle.padding;
+      sizer.style.display = 'inline-block';
+      sizer.style.opacity = '0';
+      sizer.style.position = 'absolute';
+      sizer.innerHTML = newValue;
+      document.body.appendChild(sizer);
+      var width = sizer.offsetWidth + 'px';
+      document.body.removeChild(sizer);
+      return width;
+    }
+  }, {
+    key: 'applyNewWidth',
+    value: function applyNewWidth(newValue) {
+      var input = _react2['default'].findDOMNode(this.refs.input);
+      var width = this.props.fitContent ? this.computeWidth(input, newValue) : this.props.inputAttributes.width || 'auto';
+      this.setState({ width: width });
+    }
+  }, {
     key: 'onInputChange',
     value: function onInputChange(event) {
       var newValue = event.target.value;
 
       this.onSuggestionUnfocused();
+      this.applyNewWidth(newValue);
       this.onChange(newValue);
 
       this.setState({
@@ -340,6 +365,7 @@ var Autosuggest = (function (_Component) {
           this.onSuggestionUnfocused();
 
           if (typeof newState.value === 'string' && newState.value !== this.state.value) {
+            this.applyNewWidth(newState.value);
             this.onChange(newState.value);
           }
 
@@ -418,6 +444,7 @@ var Autosuggest = (function (_Component) {
       this.justClickedOnSuggestion = true;
 
       this.onSuggestionSelected(event);
+      this.applyNewWidth(suggestionValue);
       this.onChange(suggestionValue);
       this.setState({
         value: suggestionValue,
@@ -559,7 +586,9 @@ var Autosuggest = (function (_Component) {
           ref: 'input',
           onChange: this.onInputChange,
           onKeyDown: this.onInputKeyDown,
-          onBlur: this.onInputBlur })),
+          onBlur: this.onInputBlur,
+          style: { width: this.state.width }
+        })),
         this.renderSuggestions()
       );
     }
@@ -576,7 +605,8 @@ var Autosuggest = (function (_Component) {
       onSuggestionUnfocused: _react.PropTypes.func, // This function is called when suggestion is unfocused via mouse hover or Up/Down keys
       inputAttributes: _react.PropTypes.object, // Attributes to pass to the input field (e.g. { id: 'my-input', className: 'sweet autosuggest' })
       id: _react.PropTypes.string, // Used in aria-* attributes. If multiple Autosuggest's are rendered on a page, they must have unique ids.
-      scrollBar: _react.PropTypes.bool // Should be set to true when the suggestions container can have a scroll bar
+      scrollBar: _react.PropTypes.bool, // Should be set to true when the suggestions container can have a scroll bar
+      fitContent: _react.PropTypes.bool // Set to true if you want the with fit the content's  Autosuggest component
     },
     enumerable: true
   }, {

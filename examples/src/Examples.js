@@ -6,6 +6,7 @@ require('./Autosuggest.less');
 import React, { Component, findDOMNode } from 'react';
 import classnames from 'classnames';
 import BasicExample from './BasicExample/BasicExample';
+import FitContent from './FitContent/FitContent';
 import CustomRenderer from './CustomRenderer/CustomRenderer';
 import MultipleSections from './MultipleSections/MultipleSections';
 import EventsPlayground from './EventsPlayground/EventsPlayground';
@@ -17,6 +18,7 @@ export default class Examples extends Component { // eslint-disable-line no-shad
 
     this.examples = [
       'Basic example',
+      'Fit content',
       'Custom renderer',
       'Multiple sections',
       'Events playground'
@@ -121,6 +123,7 @@ export default class Examples extends Component { // eslint-disable-line no-shad
   renderExample() {
     switch (this.state.activeExample) {
       case 'Basic example': return <BasicExample />;
+      case 'Fit content': return <FitContent />;
       case 'Custom renderer': return <CustomRenderer />;
       case 'Multiple sections': return <MultipleSections />;
       case 'Events playground': return <EventsPlayground onEventAdded={::this.onEventAdded} />;
