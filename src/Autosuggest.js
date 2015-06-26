@@ -36,7 +36,7 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
     inputAttributes: {},
     id: '1',
     scrollBar: false,
-    allowNoSuggestionValue : true
+    allowNoSuggestionValue: true
   }
 
   constructor(props) {
@@ -56,6 +56,7 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
     this.suggestionsFn = debounce(props.suggestions, 100);
     this.onChange = props.inputAttributes.onChange || (() => {});
     this.onBlur = props.inputAttributes.onBlur || (() => {});
+    this.isValueComeFromSuggestion = false;
     this.lastSuggestionsInputValue = null; // Helps to deal with delayed requests
     this.justUnfocused = false; // Helps to avoid calling onSuggestionUnfocused
                                 // twice when mouse is moving between suggestions
@@ -257,7 +258,7 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
 
   onSuggestionSelected(event) {
     const focusedSuggestion = this.getFocusedSuggestion();
-
+    this.isValueComeFromSuggestion = true;
     this.props.onSuggestionUnfocused(focusedSuggestion);
     this.props.onSuggestionSelected(focusedSuggestion, event);
   }
@@ -265,6 +266,7 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
   onInputChange(event) {
     const newValue = event.target.value;
 
+    this.isValueComeFromSuggestion = false;
     this.onSuggestionUnfocused();
     this.onChange(newValue);
 
@@ -283,6 +285,15 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
       case 13: // Enter
         if (this.state.valueBeforeUpDown !== null && this.suggestionIsFocused()) {
           this.onSuggestionSelected(event);
+        }
+        if (!this.props.allowNoSuggestionValue && !this.isValueComeFromSuggestion){
+            this.setState({
+                value: "",
+                focusedSectionIndex: null,
+                focusedSuggestionIndex: null,
+                suggestions: null,
+                valueBeforeUpDown: null
+            });
         }
 
         this.setSuggestionsState(null);
@@ -344,6 +355,15 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
     this.onSuggestionUnfocused();
 
     if (!this.justClickedOnSuggestion) {
+      if (!this.props.allowNoSuggestionValue && !this.isValueComeFromSuggestion){
+        this.setState({
+            value: "",
+            focusedSectionIndex: null,
+            focusedSuggestionIndex: null,
+            suggestions: null,
+            valueBeforeUpDown: null
+        });
+      }
       this.onBlur();
     }
 
