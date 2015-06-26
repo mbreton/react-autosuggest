@@ -10,6 +10,7 @@ import FitContent from './FitContent/FitContent';
 import CustomRenderer from './CustomRenderer/CustomRenderer';
 import MultipleSections from './MultipleSections/MultipleSections';
 import EventsPlayground from './EventsPlayground/EventsPlayground';
+import AllowNonSuggestionValue from './AllowNonSuggestionValue/AllowNonSuggestionValue';
 import EventsLog from './EventsLog/EventsLog';
 
 export default class Examples extends Component { // eslint-disable-line no-shadow
@@ -21,7 +22,8 @@ export default class Examples extends Component { // eslint-disable-line no-shad
       'Fit content',
       'Custom renderer',
       'Multiple sections',
-      'Events playground'
+      'Events playground',
+      'Allow non-suggestion value'
     ];
 
     this.eventsPlaceholder = {
@@ -126,6 +128,7 @@ export default class Examples extends Component { // eslint-disable-line no-shad
       case 'Fit content': return <FitContent />;
       case 'Custom renderer': return <CustomRenderer />;
       case 'Multiple sections': return <MultipleSections />;
+      case 'Allow non-suggestion value': return <AllowNonSuggestionValue />;
       case 'Events playground': return <EventsPlayground onEventAdded={::this.onEventAdded} />;
     }
   }
