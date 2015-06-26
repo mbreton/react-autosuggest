@@ -9,7 +9,6 @@ var suburbs = [
 ];
 
 function getSuggestions(input, callback) {
-  console.log('getSuggestion');
   const escapedInput = utils.escapeRegexCharacters(input.trim());
   const lowercasedInput = input.trim().toLowerCase();
   const suburbMatchRegex = new RegExp(escapedInput, 'i');
