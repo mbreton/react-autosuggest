@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "8912c502bcd2b914c052"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "6d7860fda04ac03ecc2d"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -28851,9 +28851,9 @@
 
 	/* WEBPACK VAR INJECTION */(function(module) {/* REACT HOT LOADER */ if (true) { (function () { var ReactHotAPI = __webpack_require__(221), RootInstanceProvider = __webpack_require__(60), ReactMount = __webpack_require__(62), React = __webpack_require__(116); module.makeHot = module.hot.data ? module.hot.data.makeHot : ReactHotAPI(function () { return RootInstanceProvider.getRootInstances(ReactMount); }, React); })(); } (function () {
 
+	// https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
 	'use strict';
 
-	// https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
 	function escapeRegexCharacters(str) {
 	  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 	}
@@ -29396,6 +29396,7 @@
 	    };
 	    this.suggestionsFn = (0, _debounce2['default'])(props.suggestions, 100);
 	    this.onChange = props.inputAttributes.onChange || function () {};
+	    this.onFocus = props.inputAttributes.onFocus || function () {};
 	    this.onBlur = props.inputAttributes.onBlur || function () {};
 	    this.lastSuggestionsInputValue = null; // Helps to deal with delayed requests
 	    this.justUnfocused = false; // Helps to avoid calling onSuggestionUnfocused
@@ -29405,6 +29406,7 @@
 
 	    this.onInputChange = this.onInputChange.bind(this);
 	    this.onInputKeyDown = this.onInputKeyDown.bind(this);
+	    this.onInputFocus = this.onInputFocus.bind(this);
 	    this.onInputBlur = this.onInputBlur.bind(this);
 	  }
 
@@ -29703,12 +29705,18 @@
 	      }
 	    }
 	  }, {
+	    key: 'onInputFocus',
+	    value: function onInputFocus(event) {
+	      this.showSuggestions(this.state.value);
+	      this.onFocus(event);
+	    }
+	  }, {
 	    key: 'onInputBlur',
-	    value: function onInputBlur() {
+	    value: function onInputBlur(event) {
 	      this.onSuggestionUnfocused();
 
 	      if (!this.justClickedOnSuggestion) {
-	        this.onBlur();
+	        this.onBlur(event);
 	      }
 
 	      this.setSuggestionsState(null);
@@ -29882,7 +29890,7 @@
 	        'div',
 	        { className: 'react-autosuggest' },
 	        _react2['default'].createElement('input', _extends({}, this.props.inputAttributes, {
-	          type: 'text',
+	          type: this.props.inputAttributes.type || 'text',
 	          value: this.state.value,
 	          autoComplete: 'off',
 	          role: 'combobox',
@@ -29893,6 +29901,7 @@
 	          ref: 'input',
 	          onChange: this.onInputChange,
 	          onKeyDown: this.onInputKeyDown,
+	          onFocus: this.onInputFocus,
 	          onBlur: this.onInputBlur })),
 	        this.renderSuggestions()
 	      );
