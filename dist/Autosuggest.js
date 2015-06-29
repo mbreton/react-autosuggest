@@ -53,6 +53,7 @@ var Autosuggest = (function (_Component) {
     };
     this.suggestionsFn = (0, _debounce2['default'])(props.suggestions, 100);
     this.onChange = props.inputAttributes.onChange || function () {};
+    this.onFocus = props.inputAttributes.onFocus || function () {};
     this.onBlur = props.inputAttributes.onBlur || function () {};
     this.isValueComeFromSuggestion = false;
     this.lastSuggestionsInputValue = null; // Helps to deal with delayed requests
@@ -63,6 +64,7 @@ var Autosuggest = (function (_Component) {
 
     this.onInputChange = this.onInputChange.bind(this);
     this.onInputKeyDown = this.onInputKeyDown.bind(this);
+    this.onInputFocus = this.onInputFocus.bind(this);
     this.onInputBlur = this.onInputBlur.bind(this);
   }
 
@@ -396,6 +398,13 @@ var Autosuggest = (function (_Component) {
 
           break;
       }
+      this.props.inputAttributes.onKeyDown && this.props.inputAttributes.onKeyDown(event);
+    }
+  }, {
+    key: 'onInputFocus',
+    value: function onInputFocus(event) {
+      this.showSuggestions(this.state.value);
+      this.onFocus(event);
     }
   }, {
     key: 'checkIsAllowToChooseNonSuggestion',
@@ -595,7 +604,7 @@ var Autosuggest = (function (_Component) {
         'div',
         { className: 'react-autosuggest' },
         _react2['default'].createElement('input', _extends({}, this.props.inputAttributes, {
-          type: 'text',
+          type: this.props.inputAttributes.type || 'text',
           value: this.state.value,
           autoComplete: 'off',
           role: 'combobox',
@@ -606,9 +615,9 @@ var Autosuggest = (function (_Component) {
           ref: 'input',
           onChange: this.onInputChange,
           onKeyDown: this.onInputKeyDown,
+          onFocus: this.onInputFocus,
           onBlur: this.onInputBlur,
-          style: { width: this.state.width }
-        })),
+          style: { width: this.state.width } })),
         this.renderSuggestions()
       );
     }
@@ -620,6 +629,7 @@ var Autosuggest = (function (_Component) {
       suggestionRenderer: _react.PropTypes.func, // Function that renders a given suggestion (must be implemented when suggestions are objects)
       suggestionValue: _react.PropTypes.func, // Function that maps suggestion object to input value (must be implemented when suggestions are objects)
       showWhen: _react.PropTypes.func, // Function that determines whether to show suggestions or not
+      onKeyDown: _react.PropTypes.func, // Function to expose an onKeyDown handler on input
       onSuggestionSelected: _react.PropTypes.func, // This function is called when suggestion is selected via mouse click or Enter
       onSuggestionFocused: _react.PropTypes.func, // This function is called when suggestion is focused via mouse hover or Up/Down keys
       onSuggestionUnfocused: _react.PropTypes.func, // This function is called when suggestion is unfocused via mouse hover or Up/Down keys
