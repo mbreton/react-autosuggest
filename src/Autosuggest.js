@@ -9,7 +9,6 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
     suggestionRenderer: PropTypes.func,     // Function that renders a given suggestion (must be implemented when suggestions are objects)
     suggestionValue: PropTypes.func,        // Function that maps suggestion object to input value (must be implemented when suggestions are objects)
     showWhen: PropTypes.func,               // Function that determines whether to show suggestions or not
-    onKeyDown: PropTypes.func,              // Function to expose an onKeyDown handler on input
     onSuggestionSelected: PropTypes.func,   // This function is called when suggestion is selected via mouse click or Enter
     onSuggestionFocused: PropTypes.func,    // This function is called when suggestion is focused via mouse hover or Up/Down keys
     onSuggestionUnfocused: PropTypes.func,  // This function is called when suggestion is unfocused via mouse hover or Up/Down keys
@@ -337,7 +336,6 @@ export default class Autosuggest extends Component { // eslint-disable-line no-s
 
         break;
     }
-    this.props.inputAttributes.onKeyDown && this.props.inputAttributes.onKeyDown(event);
   }
 
   onInputFocus(event) {
